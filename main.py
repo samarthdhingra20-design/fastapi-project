@@ -8,15 +8,16 @@ EMAIL = "24f1002646@ds.study.iitm.ac.in"
 
 ALLOWED_ORIGIN = "https://dash-uczmu5.example.com"
 
+
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[ALLOWED_ORIGIN],
+    allow_credentials=False,
     allow_methods=["GET", "OPTIONS"],
     allow_headers=["*"],
 )
-
 class MetricsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         start = time.perf_counter()
@@ -29,6 +30,10 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         return response
 
 app.add_middleware(MetricsMiddleware)
+
+@app.get("/")
+def home():
+    return {"status": "running"}
 
 @app.get("/stats")
 def stats(values: str = Query(...)):
